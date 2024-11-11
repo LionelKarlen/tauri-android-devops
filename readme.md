@@ -1,4 +1,4 @@
-# Tauri-android-docker
+# Tauri-android-devops
 > tauri android devops and development template
 
 WARN: this is not actively maintained. Here be dragons and whatnot.
