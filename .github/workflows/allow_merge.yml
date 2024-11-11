@@ -1,0 +1,35 @@
+name: AllowMerge
+on:
+  pull_request:
+    branches:
+      - stage
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check Version
+        uses: kriasoft/check-version@v1
+      # TODO: compare package.json, cargo.toml, and tauri.conf.json versions
+      - name: Get values from the package.json
+        id: packageInfo
+        uses: RadovanPelka/github-action-json@main
+        with:
+          path: "package.json"
+      - name: Get values from the package.json
+        id: tauriInfo
+        uses: RadovanPelka/github-action-json@main
+        with:
+          path: "src-tauri/tauri.conf.json"
+      - name: Get cargo info
+        id: cargoInfo
+        uses: rabbitson87/get-cargo-package-info@v1
+        with:
+          file_name: Cargo.toml
+          directory: src-tauri
+          package: version
+      - name: Fail if version mismatch
+        if: ${{ fromJson(steps.cargoInfo.outputs.object).package.version != steps.packageInfo.outputs.version && steps.tauriInfo.outputs.version != steps.packageInfo.outputs.version }}
+        run: exit 1
